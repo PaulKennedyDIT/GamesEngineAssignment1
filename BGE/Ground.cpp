@@ -6,8 +6,8 @@ using namespace BGE;
 
 Ground::Ground(void):GameComponent()
 {
-	width = 5000;
-	height = 5000;
+	width = 50;
+	height = 50;
 	// Diffuse will come from the texture
 	ambient = glm::vec3(0.2f, 0.2, 0.2f);
 }
@@ -40,8 +40,8 @@ bool Ground::Initialise()
 	{
 		return true;
 	}
-	const float twidth = 500;
-    const float theight = 500;
+	const float twidth = 50;
+    const float theight = 50;
 
 	if (!GameComponent::Initialise()) {
 		return false;
@@ -74,7 +74,7 @@ bool Ground::Initialise()
     
 	programID = Content::LoadShaderPair("standard_texture");
 
-	textureID = Content::LoadTexture("BGE_Logo_01");
+	textureID = Content::LoadTexture("sand");
 
 	glGenBuffers(1, &vertexbuffer); 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);

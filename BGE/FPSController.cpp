@@ -50,6 +50,7 @@ void FPSController::Update(float timeDelta)
 		Strafe(moveSpeed * timeDelta);
 	}
 
+	
 	int x, y;
 	int midX, midY;
 	SDL_GetMouseState(&x,&y);

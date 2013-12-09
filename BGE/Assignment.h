@@ -25,10 +25,11 @@ namespace BGE
 		bool Initialise();
 		void Update(float timeDelta);
 		void Cleanup();
-		void CreateWall();
+		void CreateWall(); 
 		
 		// The world.
 		std::shared_ptr<PhysicsFactory> physicsFactory;
 		btDiscreteDynamicsWorld * dynamicsWorld;
+		shared_ptr<GameComponent> buddha;
 	};
 }

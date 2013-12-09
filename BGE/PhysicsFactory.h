@@ -22,6 +22,7 @@ namespace BGE
 		shared_ptr<PhysicsController> CreateCameraPhysics();
 		shared_ptr<PhysicsController> CreateGroundPhysics();
 		shared_ptr<PhysicsController> CreateFromModel(string name, glm::vec3 pos, glm::quat quat, glm::vec3 scale = glm::vec3(1));
+		shared_ptr<PhysicsController> CreateContainerWall(float width, float height, float depth, glm::vec3 pos, glm::quat quat);
 		
 		void CreateWall(glm::vec3 startAt, float width, float height, float blockWidth = 5, float blockHeight = 5, float blockDepth = 5);
 		shared_ptr<PhysicsController> CreateRandomObject(glm::vec3 point, glm::quat q);

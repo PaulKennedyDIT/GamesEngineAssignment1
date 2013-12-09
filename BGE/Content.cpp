@@ -24,7 +24,7 @@ FMOD::Sound * Content::LoadSound(string name, bool looped)
 	string fileName = Content::prefix + name;
 	if (name.find(".") == string::npos)
 	{
-		 fileName += ".wav";
+		 fileName += ".mp3";
 	}
 	FMOD_RESULT res = Game::Instance()->soundSystem->fmodSystem->createSound(fileName.c_str(), (looped) ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF , 0, & sound);
 	if (res != FMOD_OK)

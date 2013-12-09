@@ -146,7 +146,7 @@ void GameComponent::Update(float timeDelta) {
 
 void GameComponent::Walk(float units)
 {
-	position += look * units;
+	position += glm::vec3(look.x,0,look.z) * units;
 	moved = true;
 }
 

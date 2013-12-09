@@ -73,6 +73,7 @@ namespace BGE
 		void Yaw(float angle);   // rotate on up vector
 		void Roll(float angle);  // rotate on look vector
 		void Attach(std::shared_ptr<GameComponent> child);
+		void Jump(float units);
 		std::list<std::shared_ptr<GameComponent>> * GetChildren();
 		std::shared_ptr<GameComponent> GetController();
 		void RecalculateVectors();

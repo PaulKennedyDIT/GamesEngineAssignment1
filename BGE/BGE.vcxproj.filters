@@ -39,6 +39,9 @@
     <Filter Include="Labs\OVRKill">
       <UniqueIdentifier>{d4fdf9a6-dec9-41c6-a284-39e14bda0d61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assignment">
+      <UniqueIdentifier>{08d1cb65-bf26-44ca-8a39-4c15e326337d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -211,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="PhysicsDrawer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Assignment.cpp">
+      <Filter>Assignment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,6 +392,9 @@
       <Filter>Games</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsDrawer.h" />
+    <ClInclude Include="Assignment.h">
+      <Filter>Assignment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\CubeShader.fragmentshader">

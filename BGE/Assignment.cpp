@@ -15,6 +15,7 @@
 #include "VectorDrawer.h"
 #include "Utils.h"
 #include "FountainEffect.h"
+#include "SnowEffect.h"
 
 using namespace BGE;
 
@@ -55,19 +56,28 @@ bool Assignment::Initialise()
 	physicsFactory->CreateGroundPhysics();
 	physicsFactory->CreateCameraPhysics();
 	physicsFactory->CreateFromModel("buddha",glm::vec3(-10,0,-40),glm::quat(),glm::vec3(10,10,10));
-	physicsFactory->CreateFromModel("buddha",glm::vec3(0,0,-40),glm::quat(),glm::vec3(10,10,10));
-
-	shared_ptr<FountainEffect> centFountain = make_shared<FountainEffect>(500);
-	centFountain->position.x = centFountain->position.y = 0;
-	centFountain->position.y = 0;
-	centFountain->diffuse = glm::vec3(1,1,0);
-	Attach(centFountain);
+	
+	shared_ptr<GameComponent> Enterprise = make_shared<GameComponent>();
+	Enterprise->Attach(Content::LoadModel("USSEnterprise", glm::rotate(glm::mat4(1), 180.0f, glm::vec3(0,1,0))));
+	Enterprise->position = glm::vec3(10, 5, 10);
+	Enterprise->scale = glm::vec3(5,5,5);
+	Enterprise->diffuse = glm::vec3(1,0,0);
+	Attach(Enterprise);
+	
+	shared_ptr<FountainEffect> jet = make_shared<FountainEffect>(500);
+	jet->position.x = jet->position.y = 0;
+	jet->position.y = 0;
+	jets.push_back(jet);
+	Attach(jet);
 
 	mass = 1.0f;
 	dforce = 4000.0f;
 
-	body = CreateRagDoll();
+	body = physicsFactory->CreateRagDoll(0.5f,0.5f,2,glm::vec3(0,0,0));
 	body->velocity = glm::vec3(0,0,0);
+
+	shared_ptr<SnowEffect> snow = make_shared<SnowEffect>();
+	Attach(snow);
 
 	if (!Game::Initialise()) {
 		return false;
@@ -80,45 +90,21 @@ bool Assignment::Initialise()
 
 void BGE::Assignment::Update(float timeDelta)
 {
-	float epsilon = glm::epsilon<float>();
-	glm::vec3 toBody = body->position - glm::vec3(epsilon,epsilon,epsilon);
-	if (glm::length(toBody) < 5)
+	for (int i = 0 ; i < jets.size() ; i ++)
 	{
-		body->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::basisUp) * dforce);
+		glm::vec3 toBody = body->position - jets[i]->position;
+		if (glm::length(toBody) < 5)
+		{
+			body->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::basisUp * dforce));
+		}
 	}
 
-	dynamicsWorld->stepSimulation(timeDelta,10);
+	dynamicsWorld->stepSimulation(timeDelta,200);
 	Game::Update(timeDelta);
 }
 
 void BGE::Assignment::Cleanup()
 {
 	Game::Cleanup();
-}
-
-shared_ptr<PhysicsController> BGE::Assignment::CreateRagDoll()
-{
-	arml = physicsFactory->CreateBox(0.5,0.5,1.5, glm::vec3(2,0,0), glm::quat());
-	armr = physicsFactory->CreateBox(0.5,0.5,1.5, glm::vec3(-2,0,0), glm::quat());
-	shared_ptr<PhysicsController> body = physicsFactory->CreateBox(1,1,4, glm::vec3(0,0,0), glm::quat()); 
-
-	shared_ptr<PhysicsController> legl = physicsFactory->CreateBox(0.5,0.5,2, glm::vec3(3,0,5), glm::quat());
-	shared_ptr<PhysicsController> legr = physicsFactory->CreateBox(0.5,0.5,2, glm::vec3(-3,0,5), glm::quat());
-	
-	// A hinge
-	btHingeConstraint * hinge = new btHingeConstraint(*legr->rigidBody, *body->rigidBody, btVector3(0.7,0,1.8),btVector3(0,0,2), btVector3(-0.3,0,0), btVector3(-0.3,1,0), true);
-	dynamicsWorld->addConstraint(hinge);
-
-	// A hinge
-	btHingeConstraint * hinge2 = new btHingeConstraint(*legl->rigidBody, *body->rigidBody, btVector3(-0.7,0,1.8),btVector3(0,0,2), btVector3(0.3,0,0), btVector3(0.3,1,0), true);
-	dynamicsWorld->addConstraint(hinge2);
-
-	btHingeConstraint * hinge3 = new btHingeConstraint(*armr->rigidBody, *body->rigidBody, btVector3(0.7,0,1.8),btVector3(0,0,-2), btVector3(-0.3,0,0), btVector3(-0.3,1,0), true);
-	dynamicsWorld->addConstraint(hinge3);
-
-	btHingeConstraint * hinge4 = new btHingeConstraint(*arml->rigidBody, *body->rigidBody, btVector3(-0.7,0,1.8),btVector3(0,0,-2), btVector3(0.3,0,0), btVector3(0.3,1,0), true);
-	dynamicsWorld->addConstraint(hinge4);
-
-	return body;
 }
 

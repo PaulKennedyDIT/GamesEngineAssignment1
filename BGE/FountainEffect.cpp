@@ -71,4 +71,3 @@ void FountainEffect::Update(float timeDelta)
 {
 	ParticleEffect::Update(timeDelta);
 }
-

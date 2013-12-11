@@ -256,7 +256,7 @@ void Game::Update(float timeDelta) {
 
 void Game::PreDraw()
 {
-	glClearColor(0.372549f, 0.623529f , 255.0f, 0.623529f);	
+	glClearColor(0.5f, 0.5f, 0.5f, 0.0f);	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -307,6 +307,7 @@ void Game::Draw()
 	PrintText("Press I to toggle info");
 	if (riftEnabled)
 	{
+
 		glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_CULL_FACE);
 		
@@ -347,8 +348,6 @@ void Game::Draw()
 		glScissor (0        ,0,(GLsizei)halfWidth, (GLsizei)fboHeight);
 		camera->view = OVRToGLMat4(viewLeft);
 		camera->projection = OVRToGLMat4(projLeft);
-
-
 		// Draw all my children
 		LineDrawer::Instance()->Draw();
 		GameComponent::Draw();
@@ -499,14 +498,14 @@ void Game::Print(string message, glm::vec2 position)
 		0,                                // stride
 		(void*)0                          // array buffer offset
 	);
-
+	glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// Draw call
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size() );
-
+	glShadeModel( GL_SMOOTH );
 	glDisable(GL_BLEND);
-
+	glEnable(GL_COLOR_MATERIAL);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 

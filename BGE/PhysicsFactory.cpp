@@ -314,3 +314,37 @@ shared_ptr<PhysicsController> PhysicsFactory::CreateRandomObject(glm::vec3 point
 	string name = names[which];
 	return CreateFromModel(name, point, q, glm::vec3(3,3,3));
 }
+
+shared_ptr<PhysicsController> PhysicsFactory::CreateRagDoll(float width, float height, float depth, glm::vec3 pos)
+{
+
+	shared_ptr<PhysicsController> arml = CreateBox(width,height,depth, glm::vec3(pos.x + 2,pos.y,pos.z), glm::quat());
+	shared_ptr<PhysicsController> armr = CreateBox(width,height,depth, glm::vec3(pos.x -2,pos.y,pos.z), glm::quat());
+	shared_ptr<PhysicsController> body = CreateBox(width*2,height*2,depth *2, glm::vec3(pos.x,pos.y,pos.z), glm::quat()); 
+
+	shared_ptr<PhysicsController> legl = CreateBox(width,height,depth, glm::vec3(pos.x + 3,pos.y,pos.z + 5), glm::quat());
+	shared_ptr<PhysicsController> legr = CreateBox(width,height,depth, glm::vec3(pos.x - 3,pos.y,pos.z + 5), glm::quat());
+	shared_ptr<PhysicsController> head = CreateCylinder(width*2,height,glm::vec3(pos.x + 4, pos.y, pos.z +2.5),glm::quat());
+	/*
+	// A hinge
+	
+	*/
+	// A hinge
+	btHingeConstraint * hinge = new btHingeConstraint(*legr->rigidBody, *body->rigidBody, btVector3(pos.x + width,pos.y,pos.z + depth),btVector3(pos.x,pos.y,pos.z + depth), btVector3(pos.x - width,pos.y,pos.z), btVector3(pos.x - width,pos.y + 1, pos.z), true);
+	dynamicsWorld->addConstraint(hinge);
+
+	// A hinge
+	btHingeConstraint * hinge2 = new btHingeConstraint(*legl->rigidBody, *body->rigidBody, btVector3(pos.x - width ,pos.y,pos.z + depth),btVector3(pos.x,pos.y,pos.z), btVector3(pos.x + width ,pos.y, pos.z), btVector3(pos.x + width, pos.y + 1 ,pos.z), true);
+	dynamicsWorld->addConstraint(hinge2);
+
+	btHingeConstraint * hinge3 = new btHingeConstraint(*armr->rigidBody, *body->rigidBody, btVector3(pos.x + width,pos.y, pos.z +depth),btVector3(pos.z,pos.y,pos.z -depth), btVector3(pos.x - width,pos.y,pos.z), btVector3(pos.x -width, pos.y + 1,pos.z), true);
+	dynamicsWorld->addConstraint(hinge3);
+
+	btHingeConstraint * hinge4 = new btHingeConstraint(*arml->rigidBody, *body->rigidBody, btVector3(pos.x -width, pos.y, pos.z + depth),btVector3(pos.x,pos.y,pos.z - depth), btVector3(pos.x + width,pos.z,pos.z), btVector3(pos.x - width, pos.y + 1,pos.z), true);
+	dynamicsWorld->addConstraint(hinge4);
+
+	btHingeConstraint * hinge5 = new btHingeConstraint(*head->rigidBody, *body->rigidBody, btVector3(pos.x + width, pos.y, pos.z + depth),btVector3(pos.x + width,pos.y,pos.z + depth), btVector3(pos.x + width,pos.z,pos.z), btVector3(pos.x - width, pos.y + 1,pos.z), true);
+	dynamicsWorld->addConstraint(hinge5);
+
+	return body;
+}

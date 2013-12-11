@@ -3,6 +3,7 @@
 #include "PhysicsController.h"
 #include "PhysicsFactory.h"
 #include <btBulletDynamicsCommon.h>
+#include "FountainEffect.h"
 
 namespace BGE
 {
@@ -26,13 +27,14 @@ namespace BGE
 		void Update(float timeDelta);
 		void Cleanup();
 		void CreateWall(); 
-		shared_ptr<PhysicsController> CreateRagDoll();
+		
 
 		shared_ptr<PhysicsController> arml;
 		shared_ptr<PhysicsController> armr;
 		shared_ptr<PhysicsController> body;
 		shared_ptr<PhysicsController> legr;
 		shared_ptr<PhysicsController> legl;
+		vector<shared_ptr<FountainEffect>> jets;
 
 		float dforce;
 		float mass;

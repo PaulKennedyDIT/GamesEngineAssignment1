@@ -14,6 +14,7 @@
 #include <gtx/norm.hpp>
 #include "VectorDrawer.h"
 #include "Utils.h"
+#include "FountainEffect.h"
 
 using namespace BGE;
 
@@ -55,15 +56,23 @@ bool Assignment::Initialise()
 	physicsFactory->CreateCameraPhysics();
 	physicsFactory->CreateFromModel("buddha",glm::vec3(-10,0,-40),glm::quat(),glm::vec3(10,10,10));
 	physicsFactory->CreateFromModel("buddha",glm::vec3(0,0,-40),glm::quat(),glm::vec3(10,10,10));
-	physicsFactory->CreateFromModel("buddha",glm::vec3(10,0,-40),glm::quat(),glm::vec3(10,10,10));
+
+	shared_ptr<FountainEffect> centFountain = make_shared<FountainEffect>(500);
+	centFountain->position.x = centFountain->position.y = 0;
+	centFountain->position.y = 0;
+	centFountain->diffuse = glm::vec3(1,1,0);
+	Attach(centFountain);
+
+	mass = 1.0f;
+	dforce = 4000.0f;
+
+	body = CreateRagDoll();
+	body->velocity = glm::vec3(0,0,0);
+
 	if (!Game::Initialise()) {
 		return false;
 	}
 
-	shared_ptr<PhysicsController> box1 = physicsFactory->CreateContainerWall(110,200,15, glm::vec3(0, 10, -50), glm::quat());
-	shared_ptr<PhysicsController> box2 = physicsFactory->CreateContainerWall(110,200,15, glm::vec3(0, 10, 50), glm::quat());
-	shared_ptr<PhysicsController> box3 = physicsFactory->CreateContainerWall(15,200,110, glm::vec3(50, 10, 0), glm::quat());
-	shared_ptr<PhysicsController> box4 = physicsFactory->CreateContainerWall(15,200,110, glm::vec3(-50, 10, 0), glm::quat());
 	camera->GetController()->position = glm::vec3(0,6, 0);
 	
 	return true;
@@ -71,6 +80,13 @@ bool Assignment::Initialise()
 
 void BGE::Assignment::Update(float timeDelta)
 {
+	float epsilon = glm::epsilon<float>();
+	glm::vec3 toBody = body->position - glm::vec3(epsilon,epsilon,epsilon);
+	if (glm::length(toBody) < 5)
+	{
+		body->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::basisUp) * dforce);
+	}
+
 	dynamicsWorld->stepSimulation(timeDelta,10);
 	Game::Update(timeDelta);
 }
@@ -79,3 +95,30 @@ void BGE::Assignment::Cleanup()
 {
 	Game::Cleanup();
 }
+
+shared_ptr<PhysicsController> BGE::Assignment::CreateRagDoll()
+{
+	arml = physicsFactory->CreateBox(0.5,0.5,1.5, glm::vec3(2,0,0), glm::quat());
+	armr = physicsFactory->CreateBox(0.5,0.5,1.5, glm::vec3(-2,0,0), glm::quat());
+	shared_ptr<PhysicsController> body = physicsFactory->CreateBox(1,1,4, glm::vec3(0,0,0), glm::quat()); 
+
+	shared_ptr<PhysicsController> legl = physicsFactory->CreateBox(0.5,0.5,2, glm::vec3(3,0,5), glm::quat());
+	shared_ptr<PhysicsController> legr = physicsFactory->CreateBox(0.5,0.5,2, glm::vec3(-3,0,5), glm::quat());
+	
+	// A hinge
+	btHingeConstraint * hinge = new btHingeConstraint(*legr->rigidBody, *body->rigidBody, btVector3(0.7,0,1.8),btVector3(0,0,2), btVector3(-0.3,0,0), btVector3(-0.3,1,0), true);
+	dynamicsWorld->addConstraint(hinge);
+
+	// A hinge
+	btHingeConstraint * hinge2 = new btHingeConstraint(*legl->rigidBody, *body->rigidBody, btVector3(-0.7,0,1.8),btVector3(0,0,2), btVector3(0.3,0,0), btVector3(0.3,1,0), true);
+	dynamicsWorld->addConstraint(hinge2);
+
+	btHingeConstraint * hinge3 = new btHingeConstraint(*armr->rigidBody, *body->rigidBody, btVector3(0.7,0,1.8),btVector3(0,0,-2), btVector3(-0.3,0,0), btVector3(-0.3,1,0), true);
+	dynamicsWorld->addConstraint(hinge3);
+
+	btHingeConstraint * hinge4 = new btHingeConstraint(*arml->rigidBody, *body->rigidBody, btVector3(-0.7,0,1.8),btVector3(0,0,-2), btVector3(0.3,0,0), btVector3(0.3,1,0), true);
+	dynamicsWorld->addConstraint(hinge4);
+
+	return body;
+}
+

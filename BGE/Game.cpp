@@ -347,6 +347,8 @@ void Game::Draw()
 		glScissor (0        ,0,(GLsizei)halfWidth, (GLsizei)fboHeight);
 		camera->view = OVRToGLMat4(viewLeft);
 		camera->projection = OVRToGLMat4(projLeft);
+
+
 		// Draw all my children
 		LineDrawer::Instance()->Draw();
 		GameComponent::Draw();

@@ -26,6 +26,16 @@ namespace BGE
 		void Update(float timeDelta);
 		void Cleanup();
 		void CreateWall(); 
+		shared_ptr<PhysicsController> CreateRagDoll();
+
+		shared_ptr<PhysicsController> arml;
+		shared_ptr<PhysicsController> armr;
+		shared_ptr<PhysicsController> body;
+		shared_ptr<PhysicsController> legr;
+		shared_ptr<PhysicsController> legl;
+
+		float dforce;
+		float mass;
 		
 		// The world.
 		std::shared_ptr<PhysicsFactory> physicsFactory;

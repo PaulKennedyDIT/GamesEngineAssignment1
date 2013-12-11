@@ -162,7 +162,6 @@ shared_ptr<PhysicsController> PhysicsFactory::CreateCylinder(float radius, float
 	body->setUserPointer(component.get());
 	component->tag = "Cylinder";
 	cyl->Attach(component);
-
 	return component;
 }
 
@@ -212,7 +211,8 @@ shared_ptr<PhysicsController> PhysicsFactory::CreateCameraPhysics()
 	shared_ptr<Camera> camera = Game::Instance()->camera;
 	camera->Attach(physicsCamera);
 
-	btRigidBody::btRigidBodyConstructionInfo cameraCI(10,physicsCamera.get(), cameraCyl, inertia);  
+
+	btRigidBody::btRigidBodyConstructionInfo cameraCI(20,physicsCamera.get(), cameraCyl, inertia);  
 	btRigidBody * body = new btRigidBody(cameraCI);
 	physicsCamera->SetPhysicsStuff(cameraCyl, body, physicsCamera.get());
 	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);

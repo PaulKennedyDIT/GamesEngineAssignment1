@@ -40,7 +40,7 @@ bool Assignment::Initialise()
 	// Set up the collision configuration and dispatcher
     collisionConfiguration = new btDefaultCollisionConfiguration();
     dispatcher = new btCollisionDispatcher(collisionConfiguration);
-	soundSystem->PlaySoundW("sound",glm::vec3(0,0,0));
+	//soundSystem->PlaySoundW("apollo13",glm::vec3(0,0,0));
 
     // The world.
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -57,21 +57,20 @@ bool Assignment::Initialise()
 	physicsFactory->CreateCameraPhysics();
 	physicsFactory->CreateFromModel("buddha",glm::vec3(-10,0,-40),glm::quat(),glm::vec3(10,10,10));
 	
-	shared_ptr<GameComponent> Enterprise = make_shared<GameComponent>();
-	Enterprise->Attach(Content::LoadModel("USSEnterprise", glm::rotate(glm::mat4(1), 180.0f, glm::vec3(0,1,0))));
-	Enterprise->position = glm::vec3(10, 5, 10);
-	Enterprise->scale = glm::vec3(5,5,5);
-	Enterprise->diffuse = glm::vec3(1,0,0);
-	Attach(Enterprise);
-	
-	shared_ptr<FountainEffect> jet = make_shared<FountainEffect>(500);
-	jet->position.x = jet->position.y = 0;
-	jet->position.y = 0;
-	jets.push_back(jet);
-	Attach(jet);
+	truster = physicsFactory->CreateFromModel("USSEnterprise",glm::vec3(-10,0,-40),glm::quat(),glm::vec3(10,10,10));
+
+	shared_ptr<FountainEffect> jet1 = make_shared<FountainEffect>(500);
+	jet1->position = truster->position;
+	Ljets.push_back(jet1);
+	truster->Attach(jet1);
+
+	shared_ptr<FountainEffect> jet2 = make_shared<FountainEffect>(500);
+	jet2->position = truster->position;
+	Rjets.push_back(jet2);
+	truster->Attach(jet2);
 
 	mass = 1.0f;
-	dforce = 4000.0f;
+	dforce = 10;
 
 	body = physicsFactory->CreateRagDoll(0.5f,0.5f,2,glm::vec3(0,0,0));
 	body->velocity = glm::vec3(0,0,0);
@@ -90,16 +89,34 @@ bool Assignment::Initialise()
 
 void BGE::Assignment::Update(float timeDelta)
 {
-	for (int i = 0 ; i < jets.size() ; i ++)
+	for (int i = 0 ; i < Ljets.size() ; i ++)
 	{
-		glm::vec3 toBody = body->position - jets[i]->position;
-		if (glm::length(toBody) < 5)
+		Ljets[i]->position.x = truster->position.x + 15;
+		Ljets[i]->position.y = truster->position.y + 30;
+		Ljets[i]->position.z = truster->position.z - 40;
+
+		Rjets[i]->position.x = truster->position.x - 15;
+		Rjets[i]->position.y = truster->position.y + 30;
+		Rjets[i]->position.z = truster->position.z - 40;
+
+		if(truster->position.y < 40)
 		{
-			body->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::basisUp * dforce));
+			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::basisUp * dforce));
+			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(-look * dforce));
+		}
+
+		if (keyState[SDL_SCANCODE_RIGHT])
+		{
+			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::right * (dforce )));
+		}
+
+		if (keyState[SDL_SCANCODE_LEFT])
+		{
+			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(-GameComponent::right * (dforce )));
 		}
 	}
-
-	dynamicsWorld->stepSimulation(timeDelta,200);
+	
+	dynamicsWorld->stepSimulation(timeDelta,20);
 	Game::Update(timeDelta);
 }
 

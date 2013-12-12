@@ -34,7 +34,9 @@ namespace BGE
 		shared_ptr<PhysicsController> body;
 		shared_ptr<PhysicsController> legr;
 		shared_ptr<PhysicsController> legl;
-		vector<shared_ptr<FountainEffect>> jets;
+		shared_ptr<PhysicsController> truster;
+		vector<shared_ptr<FountainEffect>> Ljets;
+		vector<shared_ptr<FountainEffect>> Rjets;
 
 		float dforce;
 		float mass;

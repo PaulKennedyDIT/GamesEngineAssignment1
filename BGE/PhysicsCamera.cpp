@@ -43,21 +43,6 @@ void PhysicsCamera::Update(float timeDelta)
 	float moveSpeed = speed;
 	float timeToPass = 1.0f / fireRate;
 
-	if ((keyState[SDL_SCANCODE_SPACE]) && (elapsed > timeToPass))
-	{
-		glm::vec3 pos = parent->position + (parent->look * 5.0f);
-		glm::quat q(RandomFloat(), RandomFloat(), RandomFloat(), RandomFloat());
-		glm::normalize(q);
-		shared_ptr<PhysicsController> physicsComponent = physicsFactory->CreateBox(1,1,1, pos, q);
-		
-		float force = 5000.0f;
-		physicsComponent->rigidBody->applyCentralForce(GLToBtVector(parent->look) * force);
-		elapsed = 0.0f;
-	}
-	else
-	{
-		elapsed += timeDelta;
-	}
 	string what = "Nothing";
 	// Handle the gravity gun
 	if (SDL_GetMouseState(NULL, NULL) && SDL_BUTTON(3))

@@ -127,7 +127,7 @@ bool SceneGraphGame::Initialise()
 
 	// Create some physics components using the factory
 	physicsFactory->CreateBox(5,5,5, NextPosition(current ++, componentCount), glm::quat());	
-	physicsFactory->CreateFromModel("monkey", NextPosition(current ++, componentCount), glm::quat(), glm::vec3(5,5,5));
+	physicsFactory->CreateFromModel("monkey", NextPosition(current ++, componentCount), glm::quat(), 1,glm::vec3(5,5,5));
 
 	// Create a physics car
 	physicsFactory->CreateVehicle(NextPosition(current ++, componentCount));

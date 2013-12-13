@@ -36,11 +36,14 @@ Assignment::~Assignment(void)
 
 bool Assignment::Initialise() 
 {	
+	cameraLock = true;
+	fireRate= 5.0f;
 	riftEnabled = false;
+
 	// Set up the collision configuration and dispatcher
     collisionConfiguration = new btDefaultCollisionConfiguration();
     dispatcher = new btCollisionDispatcher(collisionConfiguration);
-	//soundSystem->PlaySoundW("apollo13",glm::vec3(0,0,0));
+	soundSystem->PlaySoundW("sound",glm::vec3(0,0,0));
 
     // The world.
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -55,68 +58,101 @@ bool Assignment::Initialise()
 
 	physicsFactory->CreateGroundPhysics();
 	physicsFactory->CreateCameraPhysics();
-	physicsFactory->CreateFromModel("buddha",glm::vec3(-10,0,-40),glm::quat(),glm::vec3(10,10,10));
+	physicsFactory->CreateFromModel("buddha",glm::vec3(-10,0,4000),glm::quat(),5,glm::vec3(100,100,100));
 	
-	truster = physicsFactory->CreateFromModel("USSEnterprise",glm::vec3(-10,0,-40),glm::quat(),glm::vec3(10,10,10));
-
-	shared_ptr<FountainEffect> jet1 = make_shared<FountainEffect>(500);
-	jet1->position = truster->position;
-	Ljets.push_back(jet1);
-	truster->Attach(jet1);
-
-	shared_ptr<FountainEffect> jet2 = make_shared<FountainEffect>(500);
-	jet2->position = truster->position;
-	Rjets.push_back(jet2);
-	truster->Attach(jet2);
+	USSEnterprise = physicsFactory->CreateFromModel("USSEnterprise",glm::vec3(0,50,0),glm::quat(),2,glm::vec3(1,1,1));
 
 	mass = 1.0f;
-	dforce = 10;
+	dforce = 100;
+	t =0.0f;
 
-	body = physicsFactory->CreateRagDoll(0.5f,0.5f,2,glm::vec3(0,0,0));
+	body = physicsFactory->CreateRagDoll(1,1,4,glm::vec3(0,0,0));
 	body->velocity = glm::vec3(0,0,0);
-
-	shared_ptr<SnowEffect> snow = make_shared<SnowEffect>();
-	Attach(snow);
 
 	if (!Game::Initialise()) {
 		return false;
 	}
-
-	camera->GetController()->position = glm::vec3(0,6, 0);
-	
+	camera->GetController()->position = USSEnterprise->position;
+	camera->look = -USSEnterprise->PhysicsController::look;
 	return true;
 }
 
 void BGE::Assignment::Update(float timeDelta)
 {
-	for (int i = 0 ; i < Ljets.size() ; i ++)
+	float newtons = 10.0f;
+	float epsilon = glm::epsilon<float>();
+	float theta;
+	glm::vec3 axis;
+	glm::vec3 toShip2;
+
+	if (USSEnterprise->position.y < 40)
 	{
-		Ljets[i]->position.x = truster->position.x + 15;
-		Ljets[i]->position.y = truster->position.y + 30;
-		Ljets[i]->position.z = truster->position.z - 40;
+		USSEnterprise->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(USSEnterprise->PhysicsController::up * dforce));
+	}
 
-		Rjets[i]->position.x = truster->position.x - 15;
-		Rjets[i]->position.y = truster->position.y + 30;
-		Rjets[i]->position.z = truster->position.z - 40;
+	if (USSEnterprise->position.y > 1000)
+	{
+		USSEnterprise->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(-USSEnterprise->PhysicsController::up * dforce));
+	}
 
-		if(truster->position.y < 40)
-		{
-			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::basisUp * dforce));
-			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(-look * dforce));
-		}
+	if (keyState[SDL_SCANCODE_LEFT])
+	{
+		USSEnterprise->PhysicsController::rigidBody->setAngularVelocity(btVector3(0,0.3,0));
+		camera->GetController()->position.z = camera->GetController()->position.z + 1;
+	}
+	if (keyState[SDL_SCANCODE_RIGHT])
+	{
+		 USSEnterprise->PhysicsController::rigidBody->setAngularVelocity(btVector3(0,-0.3,0));
+	}
 
-		if (keyState[SDL_SCANCODE_RIGHT])
-		{
-			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(GameComponent::right * (dforce )));
-		}
+	if(keyState[SDL_SCANCODE_DOWN])
+    {
+       USSEnterprise->PhysicsController::rigidBody->setAngularVelocity(btVector3(0.1,0,0));
+    }
+	if(keyState[SDL_SCANCODE_UP])
+    {
+      USSEnterprise->PhysicsController::rigidBody->setAngularVelocity(btVector3(-0.1,0,0));
+    }
 
-		if (keyState[SDL_SCANCODE_LEFT])
-		{
-			truster->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(-GameComponent::right * (dforce )));
-		}
+	if(keyState[SDL_SCANCODE_S])
+    {
+		USSEnterprise->PhysicsController::rigidBody->clearForces();
+    }
+
+	camera->GetController()->look = -USSEnterprise->PhysicsController::look;
+	camera->GetController()->right = USSEnterprise->PhysicsController::right;
+	camera->GetController()->up = USSEnterprise->PhysicsController::up;
+	
+	float moveSpeed = speed;
+	float timeToPass = 1.0f / fireRate;
+	if ((keyState[SDL_SCANCODE_SPACE]) && (elapsed > timeToPass))
+	{
+		glm::vec3 pos = glm::vec3(USSEnterprise->PhysicsController::position.x,USSEnterprise->PhysicsController::position.y - 3, USSEnterprise->PhysicsController::position.z + 10)  + (USSEnterprise->PhysicsController::look * 5.0f);
+		glm::quat q(RandomFloat(), RandomFloat(), RandomFloat(), RandomFloat());
+		glm::normalize(q);
+		shared_ptr<PhysicsController> physicsComponent = physicsFactory->CreateBox(1,1,1, pos, q);
+		
+		float force = dforce * 2;
+		physicsComponent->rigidBody->applyCentralForce(GLToBtVector(-USSEnterprise->PhysicsController::look) * force);
+		elapsed = 0.0f;
+	}
+		else
+	{
+		elapsed += timeDelta;
 	}
 	
-	dynamicsWorld->stepSimulation(timeDelta,20);
+	camera->GetController()->position = USSEnterprise->PhysicsController::position;
+	camera->orientation = USSEnterprise->PhysicsController::orientation * camera->GetController()->orientation;
+	camera->RecalculateVectors();
+	camera->view = glm::lookAt(camera->position, camera->position + camera->look, camera->up);
+	camera->GetController()->position.z = camera->GetController()->position.z - 100; 
+	camera->GetController()->position.y = camera->GetController()->position.y + 5; 
+
+	USSEnterprise->PhysicsController::rigidBody->applyCentralForce(GLToBtVector(-USSEnterprise->PhysicsController::look * dforce));
+
+	USSEnterprise->PhysicsController::rigidBody->setDamping(0.20,0.70);
+	
+	dynamicsWorld->stepSimulation(timeDelta,300);
 	Game::Update(timeDelta);
 }
 

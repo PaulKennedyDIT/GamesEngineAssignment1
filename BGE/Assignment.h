@@ -34,16 +34,22 @@ namespace BGE
 		shared_ptr<PhysicsController> body;
 		shared_ptr<PhysicsController> legr;
 		shared_ptr<PhysicsController> legl;
-		shared_ptr<PhysicsController> truster;
+		shared_ptr<PhysicsController> USSEnterprise;
 		vector<shared_ptr<FountainEffect>> Ljets;
 		vector<shared_ptr<FountainEffect>> Rjets;
+		shared_ptr<GameComponent> buddha;
 
+		bool cameraLock;
 		float dforce;
 		float mass;
+		float fireRate;
+		bool slerping;
+		glm::quat fromQuaternion;
+		glm::quat toQuaternion;
+		float t;
 		
 		// The world.
 		std::shared_ptr<PhysicsFactory> physicsFactory;
 		btDiscreteDynamicsWorld * dynamicsWorld;
-		shared_ptr<GameComponent> buddha;
 	};
 }

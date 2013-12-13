@@ -37,7 +37,7 @@ void PhysicsFactory::CreateWall(glm::vec3 startAt, float width, float height, fl
 	}
 }
 
-shared_ptr<PhysicsController> PhysicsFactory::CreateFromModel(string name, glm::vec3 pos, glm::quat quat, glm::vec3 scale)
+shared_ptr<PhysicsController> PhysicsFactory::CreateFromModel(string name, glm::vec3 pos, glm::quat quat, btScalar imass,glm::vec3 scale)
 {
 	shared_ptr<GameComponent> component = make_shared<GameComponent>();
 	component->tag = name;
@@ -58,7 +58,7 @@ shared_ptr<PhysicsController> PhysicsFactory::CreateFromModel(string name, glm::
 		it ++;
 	}
 	
-	btScalar mass = 1;
+	btScalar mass = imass;
 	btVector3 inertia(0,0,0);
 	
 	tetraShape->calculateLocalInertia(mass,inertia);
@@ -312,7 +312,7 @@ shared_ptr<PhysicsController> PhysicsFactory::CreateRandomObject(glm::vec3 point
 
 	int which = rand() % names.size();
 	string name = names[which];
-	return CreateFromModel(name, point, q, glm::vec3(3,3,3));
+	return CreateFromModel(name, point, q, 1,glm::vec3(3,3,3));
 }
 
 shared_ptr<PhysicsController> PhysicsFactory::CreateRagDoll(float width, float height, float depth, glm::vec3 pos)

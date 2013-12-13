@@ -7,7 +7,7 @@
 
 #define NUM_FOUNTAINS 20
 #define FOUNTAIN_RADIUS 40.0f
-#define FOUNTAIN_HEIGHT 100
+#define FOUNTAIN_HEIGHT 60
 
 namespace BGE
 {

@@ -42,7 +42,7 @@ void Camera::Update(float timeDelta) {
 	GameComponent::Update(timeDelta);
 	view = glm::lookAt(
 		position
-		, position + look
+		, position + -look
 		, basisUp
 		);
 	stringstream ss;

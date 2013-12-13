@@ -98,10 +98,13 @@ bool Assignment::Initialise()
 	shared_ptr<PhysicsController> obstacleUP  = physicsFactory->CreateContainerWall(20, 250, 20, glm::vec3(-20,40,5000), glm::quat());
 	USSEnterprise = physicsFactory->CreateFromModel("USSEnterprise",glm::vec3(0,50,0),glm::quat(),2,glm::vec3(5,2.5,5));
 
+	shared_ptr<SnowEffect> snow = make_shared<SnowEffect>();
+	Attach(snow);
+
 	mass = 1.0f;
 	dforce = 1000;
 	t =0.0f;
-	camera->orientation = USSEnterprise->orientation;
+
 	body = physicsFactory->CreateRagDoll(1,1,4,glm::vec3(50,0,465));
 	body->position = glm::vec3(USSEnterprise->PhysicsController::position.x,USSEnterprise->PhysicsController::position.y - 3,USSEnterprise->PhysicsController::position.z);
 	if (!Game::Initialise()) {
@@ -120,8 +123,7 @@ void BGE::Assignment::Update(float timeDelta)
 	glm::vec3 axis;
 	glm::vec3 toShip2;
 
-	camera->GetController()->look = USSEnterprise->PhysicsController::look;
-	camera->look = USSEnterprise->look;
+
 	camera->GetController()->up = USSEnterprise->PhysicsController::up;
 	camera->GetController()->right = USSEnterprise->PhysicsController::right;
 

@@ -56,7 +56,7 @@ bool PhysicsGame1::Initialise()
 	physicsFactory->CreateGroundPhysics();
 	physicsFactory->CreateCameraPhysics();
 	
-	//physicsFactory->CreateWall(glm::vec3(-20,0,20), 10, 10);
+	
 	//// Now some constraints
 	//
 

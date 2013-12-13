@@ -5,6 +5,10 @@
 #include <btBulletDynamicsCommon.h>
 #include "FountainEffect.h"
 
+#define NUM_FOUNTAINS 20
+#define FOUNTAIN_RADIUS 40.0f
+#define FOUNTAIN_HEIGHT 100
+
 namespace BGE
 {
 	class Assignment :
@@ -36,8 +40,8 @@ namespace BGE
 		shared_ptr<PhysicsController> legl;
 		shared_ptr<PhysicsController> USSEnterprise;
 		shared_ptr<PhysicsController> BigBuddha;
-		vector<shared_ptr<FountainEffect>> Ljets;
-		vector<shared_ptr<FountainEffect>> Rjets;
+		shared_ptr<PhysicsController> pipe;
+		vector<shared_ptr<FountainEffect>> Djets;
 		shared_ptr<GameComponent> buddha;
 
 		bool cameraLock;
@@ -48,6 +52,8 @@ namespace BGE
 		glm::quat fromQuaternion;
 		glm::quat toQuaternion;
 		float t;
+		float fountainTheta;
+
 		
 		// The world.
 		std::shared_ptr<PhysicsFactory> physicsFactory;

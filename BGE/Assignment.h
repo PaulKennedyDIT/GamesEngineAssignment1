@@ -35,6 +35,7 @@ namespace BGE
 		shared_ptr<PhysicsController> legr;
 		shared_ptr<PhysicsController> legl;
 		shared_ptr<PhysicsController> USSEnterprise;
+		shared_ptr<PhysicsController> BigBuddha;
 		vector<shared_ptr<FountainEffect>> Ljets;
 		vector<shared_ptr<FountainEffect>> Rjets;
 		shared_ptr<GameComponent> buddha;

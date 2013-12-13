@@ -33,6 +33,7 @@ bool Lab4::Initialise()
 	Attach(ship2);
 
 
+
 	riftEnabled = false;
 	fullscreen = false;
 	width = 800;

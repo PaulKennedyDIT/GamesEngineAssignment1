@@ -74,7 +74,7 @@ bool Ground::Initialise()
     
 	programID = Content::LoadShaderPair("standard_texture");
 
-	textureID = Content::LoadTexture("wood");
+	textureID = Content::LoadTexture("neon");
 
 	glGenBuffers(1, &vertexbuffer); 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);

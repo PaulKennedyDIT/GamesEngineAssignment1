@@ -346,5 +346,5 @@ shared_ptr<PhysicsController> PhysicsFactory::CreateRagDoll(float width, float h
 	btHingeConstraint * hinge5 = new btHingeConstraint(*head->rigidBody, *body->rigidBody, btVector3(pos.x + width, pos.y, pos.z + depth),btVector3(pos.x + width,pos.y,pos.z + depth), btVector3(pos.x + width,pos.z,pos.z), btVector3(pos.x - width, pos.y + 1,pos.z), true);
 	dynamicsWorld->addConstraint(hinge5);
 
-	return body;
+	return arml;
 }
